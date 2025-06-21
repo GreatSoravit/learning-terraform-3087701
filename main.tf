@@ -61,6 +61,14 @@ module "blog_alb" {
   subnets         = module.blog_vpc.public_subnets
   security_groups = [module.blog_sg.security_group_id]
 
+   elastic_gpu_specifications {
+    type = "test"
+  }
+
+   elastic_inference_accelerator {
+    type = "test"
+  }
+
   listeners = {
     ex-http-https-redirect = {
       port     = 80

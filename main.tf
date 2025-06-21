@@ -39,12 +39,11 @@ module "autoscaling" {
   max_size = 2
   
   vpc_zone_identifier = module.blog_vpc.public_subnets
-  target_groups_arn   = module.blog_alb.target_group_arns
-  security_group      = [module.blog_sg.security_group_id]
+  target_group_arn    = module.blog_alb.target_group_arns
+  security_groups     = [module.blog_sg.security_group_id]
 
-  ami                 = data.aws_ami.app_ami.id
+  image_id            = data.aws_ami.app_ami.id
   instance_type       = var.instance_type
-
 }
 
 module "blog_alb" {
@@ -52,6 +51,7 @@ module "blog_alb" {
   version = "9.17.0"
 
   name            = "blog-alb"
+  load_balancer_type = "application'
   vpc_id          = module.blog_vpc.vpc_id
   subnets         = module.blog_vpc.public_subnets
   security_groups = [module.blog_sg.security_group_id]

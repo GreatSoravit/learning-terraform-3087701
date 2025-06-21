@@ -43,7 +43,7 @@ module "autoscaling" {
   traffic_source_attachments = {
   alb_target_group = {
     type = "elb"
-    traffic_source_identifier = module.blog_alb.target_groups
+    traffic_source_identifier = module.blog_alb.target_groups.ex-instance.arn
   }
 }
 
@@ -79,6 +79,7 @@ module "blog_alb" {
       protocol         = "HTTP"
       port             = 80
       target_type      = "instance"
+      create_attachment = false
     }
   }
 

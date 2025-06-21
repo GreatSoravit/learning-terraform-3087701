@@ -8,47 +8,37 @@ data "aws_ami" "app_ami" {
 
   filter {
     name   = "virtualization-type"
-    values = ["hvm"]
+    values = [var.ami_filter.name]
   }
 
-  owners = ["979382823631"] # Bitnami
+  owners = [var.ami_filter.owner]
 }
 
 module "blog_vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
-  name = "dev"
-  cidr = "10.0.0.0/16"
+  name = var.environment.name
+  cidr = "${var.environment.network_prefix}.0.0/16"
 
   azs             = ["eu-west-2", "eu-west-2b", "eu-west-2c"]
 
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  public_subnets  = ["${var.environment.network_prefix}.101.0/24", "${var.environment.network_prefix}.102.0/24", "${var.environment.network_prefix}.103.0/24"]
 
   tags = {
     Terraform = "true"
-    Environment = "dev"
+    Environment = var.environment.name
   }
 }
 
-module "autoscaling" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-  version = "8.3.0"
-  
-  name = "blog"
-  min_size = 1
-  max_size = 2
-  
-  vpc_zone_identifier = module.blog_vpc.public_subnets
-  security_groups     = [module.blog_sg.security_group_id]
-  traffic_source_attachments = {
-  blog_alb  = {
-    traffic_source_identifier = module.blog_alb.target_groups.ex-instance.arn
-    traffic_source_type = "elbv2"
-  }
-}
+resource "aws_instance" "blog" {
+  ami                    = data.aws_ami.app_ami.id
+  instance_type          = var.instance_type
+  subnet_id              = module.blog_vpc.public_subnets[0]
+  vpc_security_group_ids = [module.blog_sg.security_group_id]
 
-  image_id            = data.aws_ami.app_ami.id
-  instance_type       = var.instance_type
+  tags = {
+    Name = "Learning Terraform"
+  }
 }
 
 module "blog_alb" {
@@ -82,8 +72,7 @@ module "blog_alb" {
   }
 
   tags = {
-    Environment = "dev"
-    Project     = "Example"
+    Environment = var.environment.name
   }
 }
 
@@ -91,7 +80,7 @@ module "blog_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.3.0"
   
-  name   = "blog"
+  name   = "${var.environment.name}-blog"
   vpc_id = module.blog_vpc.vpc_id
   ingress_rules       = ["http-80-tcp", "https-443-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]

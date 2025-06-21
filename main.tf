@@ -2,11 +2,6 @@ data "aws_ami" "app_ami" {
   most_recent = true
 
   filter {
-    name   = "name"
-    values = ["bitnami-tomcat-*-x86_64-hvm-ebs-nami"]
-  }
-
-  filter {
     name   = "virtualization-type"
     values = [var.ami_filter.name]
   }
@@ -55,9 +50,6 @@ module "blog_alb" {
     ex-http-https-redirect = {
       port     = 80
       protocol = "HTTP"
-      forward = {
-        target_group_key = "blog_asg"
-      }
     }
   }
 

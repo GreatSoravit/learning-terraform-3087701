@@ -40,20 +40,6 @@ module "autoscaling" {
   
   vpc_zone_identifier = module.blog_vpc.public_subnets
   security_groups     = [module.blog_sg.security_group_id]
-  traffic_source_attachments = {
-  ex-alb = {
-    traffic_source_identifier = module.blog_alb.target_groups.ex-instance.arn
-    traffic_source_type = "elbv2"
-  }
-}
-
-  elastic_gpu_specifications {
-    type = "test"
-  }
-
-  elastic_inference_accelerator {
-    type = "test"
-  }
 
   image_id            = data.aws_ami.app_ami.id
   instance_type       = var.instance_type

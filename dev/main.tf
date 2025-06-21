@@ -1,3 +1,3 @@
 module "dev" {
-    soure = "../module/blog"
+    soure = "../modules/blog"
 }

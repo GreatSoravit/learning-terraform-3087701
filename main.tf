@@ -41,7 +41,7 @@ module "autoscaling" {
   vpc_zone_identifier = module.blog_vpc.public_subnets
   security_groups     = [module.blog_sg.security_group_id]
   traffic_source_attachments = {
-  ex-alb = {
+  blog_alb  = {
     traffic_source_identifier = module.blog_alb.target_groups.ex-instance.arn
     traffic_source_type = "elbv2"
   }
@@ -65,10 +65,8 @@ module "blog_alb" {
     ex-http-https-redirect = {
       port     = 80
       protocol = "HTTP"
-      redirect = {
-        port        = "443"
-        protocol    = "HTTPS"
-        status_code = "HTTP_301"
+      forward = {
+        target_group_key = "blog_asg"
       }
     }
   }

@@ -41,9 +41,9 @@ module "autoscaling" {
   vpc_zone_identifier = module.blog_vpc.public_subnets
   security_groups     = [module.blog_sg.security_group_id]
   traffic_source_attachments = {
-  alb_target_group = {
-    type = "elb"
+  ex-alb = {
     traffic_source_identifier = module.blog_alb.target_groups.ex-instance.arn
+    traffic_source_type = "elbv2"
   }
 }
 

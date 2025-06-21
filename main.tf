@@ -55,6 +55,11 @@ module "blog_alb" {
     ex-http-https-redirect = {
       port     = 80
       protocol = "HTTP"
+      redirect = {Add commentMore actions
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
     }
   }
 

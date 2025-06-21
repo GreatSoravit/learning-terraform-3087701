@@ -45,6 +45,15 @@ module "autoscaling" {
     traffic_source_identifier = module.blog_alb.target_groups.ex-instance.arn
     traffic_source_type = "elbv2"
   }
+
+  elastic_gpu_specifications {
+    type = "test"
+  }
+
+  elastic_inference_accelerator {
+    type = "test"
+  }
+
 }
 
   image_id            = data.aws_ami.app_ami.id
@@ -60,14 +69,6 @@ module "blog_alb" {
   vpc_id          = module.blog_vpc.vpc_id
   subnets         = module.blog_vpc.public_subnets
   security_groups = [module.blog_sg.security_group_id]
-
-  elastic_gpu_specifications {
-    type = "test"
-  }
-
-  elastic_inference_accelerator {
-    type = "test"
-  }
 
   listeners = {
     ex-http-https-redirect = {
